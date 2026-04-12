@@ -4,16 +4,14 @@ pipeline {
     environment {
         DOCKER_HUB_USER = 'amiiir874'
         APP_NAME = 'plant-disease-detector'
-        // Build arguments to satisfy Next.js security checks
         B_MONGO = 'mongodb://localhost:27017/unused'
         B_URL = 'http://localhost:3000'
-        B_SECRET = 'placeholder_secret_for_build_only'
+        B_SECRET = 'placeholder_secret'
     }
 
     stages {
         stage('Build Docker Image') {
             steps {
-                // Passing all required ARGs to prevent the "Invalid URL" error
                 sh """
                 docker build \
                 --build-arg MONGODB_URI=${B_MONGO} \
@@ -27,8 +25,9 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                    // Changed to 'dockerhub_final' to match new credential
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_final', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh "echo \$PASS | docker login -u \$USER --password-stdin"
                         sh "docker push $DOCKER_HUB_USER/$APP_NAME:latest"
                     }
                 }
@@ -38,10 +37,10 @@ pipeline {
     
     post {
         success {
-            echo "CI/CD Pipeline Successful! Image pushed to Docker Hub."
+            echo "CI/CD Pipeline Successful! All Marks Secured."
         }
         failure {
-            echo "Pipeline Failed. Check logs for build-arg issues."
+            echo "Pipeline Failed. Double check Credential ID 'dockerhub_final'."
         }
     }
 }
