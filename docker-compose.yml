@@ -1,0 +1,34 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: plant-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: plantuser
+      MONGO_INITDB_ROOT_PASSWORD: plantpass
+    volumes:
+      - mongo-data:/data/db
+
+  web:
+    build:
+      context: .
+      args:
+        MONGODB_URI: mongodb://plantuser:plantpass@mongo:27017/plant-disease-detector?authSource=admin
+        NEXTAUTH_SECRET: Wy2LTCs7N5wus+nxI2eKjQZ0ltp22RpOGFQbLfu6XgCA0OEYN38QzpFPJkESUg4H
+        NEXTAUTH_URL: http://51.21.199.94
+    image: amiiir874/plant-disease-detector:latest
+    container_name: plant-web
+    restart: always
+    ports:
+      - "80:3000"
+    environment:
+      NODE_ENV: production
+      # runtime env (also set here, to be safe)
+      MONGODB_URI: mongodb://plantuser:plantpass@mongo:27017/plant-disease-detector?authSource=admin
+      NEXTAUTH_SECRET: Wy2LTCs7N5wus+nxI2eKjQZ0ltp22RpOGFQbLfu6XgCA0OEYN38QzpFPJkESUg4H
+      NEXTAUTH_URL: http://51.21.199.94
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
