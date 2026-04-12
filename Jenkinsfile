@@ -9,18 +9,18 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                // We don't need the 'git' step here because Jenkins 
-                // already checked out the code at the start.
-                sh "docker build -t $DOCKER_HUB_USER/$APP_NAME:latest ." [cite: 13, 21]
+                // This builds the image using the Dockerfile in your repo
+                sh "docker build -t $DOCKER_HUB_USER/$APP_NAME:latest ."
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 script {
+                    // This logs into Docker Hub and pushes the image
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "echo $PASS | docker login -u $USER --password-stdin" [cite: 13]
-                        sh "docker push $DOCKER_HUB_USER/$APP_NAME:latest" [cite: 13]
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh "docker push $DOCKER_HUB_USER/$APP_NAME:latest"
                     }
                 }
             }
@@ -29,10 +29,10 @@ pipeline {
     
     post {
         success {
-            echo "CI/CD Pipeline Successful!" [cite: 16]
+            echo "CI/CD Pipeline Successful!"
         }
         failure {
-            echo "Pipeline Failed. Check logs."
+            echo "Pipeline Failed. Check Jenkins logs for errors."
         }
     }
 }
