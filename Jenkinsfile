@@ -4,15 +4,23 @@ pipeline {
     environment {
         DOCKER_HUB_USER = 'amiiir874'
         APP_NAME = 'plant-disease-detector'
-        // Dummy URI to satisfy the Next.js build check
-        BUILD_MONGO_URI = 'mongodb://localhost:27017/unused'
+        // Build arguments to satisfy Next.js security checks
+        B_MONGO = 'mongodb://localhost:27017/unused'
+        B_URL = 'http://localhost:3000'
+        B_SECRET = 'placeholder_secret_for_build_only'
     }
 
     stages {
         stage('Build Docker Image') {
             steps {
-                // We pass the MONGODB_URI as a build argument so the 'npm run build' doesn't crash
-                sh "docker build --build-arg MONGODB_URI=${BUILD_MONGO_URI} -t $DOCKER_HUB_USER/$APP_NAME:latest ."
+                // Passing all required ARGs to prevent the "Invalid URL" error
+                sh """
+                docker build \
+                --build-arg MONGODB_URI=${B_MONGO} \
+                --build-arg NEXTAUTH_URL=${B_URL} \
+                --build-arg NEXTAUTH_SECRET=${B_SECRET} \
+                -t $DOCKER_HUB_USER/$APP_NAME:latest .
+                """
             }
         }
 
@@ -30,10 +38,10 @@ pipeline {
     
     post {
         success {
-            echo "CI/CD Pipeline Successful!"
+            echo "CI/CD Pipeline Successful! Image pushed to Docker Hub."
         }
         failure {
-            echo "Pipeline Failed. Check logs for MONGODB_URI errors."
+            echo "Pipeline Failed. Check logs for build-arg issues."
         }
     }
 }
