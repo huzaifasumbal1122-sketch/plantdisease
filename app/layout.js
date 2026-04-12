@@ -1,3 +1,4 @@
+"use client";
 import AuthProvider from "@/app/components/AuthProvider";
 import "@/app/globals.css";
 
