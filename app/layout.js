@@ -1,4 +1,4 @@
-"use client";
+import Logo from './Logo';
 import AuthProvider from "@/app/components/AuthProvider";
 import "@/app/globals.css";
 
@@ -14,9 +14,10 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <div className="app-wrapper">
             <nav className="navbar">
-              <div className="logo" style={{ cursor: "pointer" }} onClick={() => window.location.href='/'}>
-                🌿 🌱 PlantCare
-              </div>
+              
+              {/* This brings in your interactive logo safely! */}
+              <Logo />
+
               <div className="nav-links">
                 {/* Temporary placeholder, actual links will depend on session */}
                 <a href="/">Home</a>
