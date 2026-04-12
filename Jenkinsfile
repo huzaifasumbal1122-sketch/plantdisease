@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                // This builds the image using the Dockerfile in your repo
+                // Requirement: Build the application in a containerized environment
                 sh "docker build -t $DOCKER_HUB_USER/$APP_NAME:latest ."
             }
         }
@@ -17,7 +17,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // This logs into Docker Hub and pushes the image
+                    // Requirement: Push the code to Docker Hub
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                         sh "echo $PASS | docker login -u $USER --password-stdin"
                         sh "docker push $DOCKER_HUB_USER/$APP_NAME:latest"
