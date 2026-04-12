@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  [cite_start]web-prod:  # [cite: 23] Different name
+    container_name: plant-web-prod
+    image: amiiir874/plant-disease-detector:latest
+    ports:
+      - [cite_start]"8081:3000"  # [cite: 23] Different port
+    volumes:
+      - [cite_start].:/app       # [cite: 23] Volume for code
+      - /app/node_modules
+    depends_on:
+      - mongo-prod
+
+  mongo-prod:
+    container_name: plant-mongo-prod
+    image: mongo:6
+    ports:
+      - [cite_start]"27018:27017" # [cite: 23] Different port
+    volumes:
+      - [cite_start]mongo-data-prod:/data/db # [cite: 15] Persistent volume
+
+volumes:
+  mongo-data-prod:
